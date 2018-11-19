@@ -3,8 +3,8 @@
 
 int main ()
     {
-    darray <int> arr;
+    darray <int> arr (0);
     std::vector <int> vec;
     
-
+    system ("pause");
     }
