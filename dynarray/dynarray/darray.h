@@ -8,6 +8,7 @@ typedef size_t arrln;
 #define SZ_DEFAULT 1000
 #define STC_SZ_MAX 5.f
 #define STC_SZ_MIN 1.2f
+#define STC_N_STAT 50.f
 #define msgassert(expression, message) { if (!expression) printf ("%s\n", message); \
                                        (void)((!!(expression)) || \
                                        (_wassert(_CRT_WIDE(#expression), _CRT_WIDE(__FILE__), (unsigned)(__LINE__)), 0)); }
@@ -89,10 +90,19 @@ template<typename dataType>
 inline void darray<dataType>::updateStretchK ()
     {
     nOperations++;
+    
+    if (nOperations < STC_N_STAT)
+        {
+        nOperations--;
+        nPushes--;
+        }
+    if (nPushes < 0)
+        nPushes = 0;
+
 
     stretch_k = STC_SZ_MIN + 
                 (STC_SZ_MAX - STC_SZ_MIN) *
-                (float (nPushes) / float (nOperations) - 0.5f) * 2;
+                (float (nPushes) / float (nOperations));
     }
 
 // Constructors and destructors
@@ -264,3 +274,5 @@ bool darray<dataType>::resize (arrln newSize)
 
 #undef SZ_DEFAULT
 #undef STC_SZ_MAX
+#undef STC_SZ_MIN
+#undef STC_N_STAT
