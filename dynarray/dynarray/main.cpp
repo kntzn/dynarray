@@ -14,12 +14,12 @@ int main ()
     clock_t start = clock ();
     for (int i = 0; i < 10; i++)
         arr.push_back (i);
-    arr.insert (557, 5);
-    for (int i = 0; i < 10; i++)
+    
+    for (int i = - (signed) arr.size (); i < (signed) arr.size(); i++)
         printf ("[%d] = %d\n", i, arr [i]);
 
 
-    printf ("tm: %d\n", clock () - start);
+    //printf ("tm: %d\n", clock () - start);
 
 
     system ("pause");

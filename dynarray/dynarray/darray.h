@@ -5,6 +5,7 @@
 #include <math.h>
 
 typedef size_t arrln;
+typedef signed int sarrln;
 #define SZ_DEFAULT 1000
 #define STC_SZ_MAX 5.f
 #define STC_SZ_MIN 1.5f
@@ -37,14 +38,14 @@ template <typename dataType> class darray
         dataType & front ();
 
         // Operators
-        dataType & operator [] (arrln index);
+        dataType & operator [] (sarrln index);
         
         // Modifiers
         bool push_back (dataType value);
         bool pop_back ();
         bool push_front (dataType value);
         bool pop_front ();
-        bool insert (dataType value, arrln index);
+        bool insert (dataType value, sarrln index);
 
         // Size getters
         arrln size ();
@@ -141,8 +142,11 @@ dataType & darray <dataType>::front ()
 
 // Operators
 template<typename dataType>
-inline dataType & darray<dataType>::operator[](arrln index)
+inline dataType & darray<dataType>::operator[](sarrln index)
     {
+    if (index < 0)
+        index = currentLen + index;
+
     return container [index];
     }
 
@@ -215,9 +219,16 @@ bool darray<dataType>::pop_front ()
     }
 
 template<typename dataType>
-inline bool darray<dataType>::insert (dataType value, arrln index)
+inline bool darray<dataType>::insert (dataType value, sarrln index)
     {
     // TODO: add negative index
+    if (index < 0)
+        index = currentLen + index;
+    if (index < 0 || index > currentLen)
+        {
+        printf ("Index is out of range\n");
+        return false;
+        }
 
     nPushes++;
     updateStretchK ();
