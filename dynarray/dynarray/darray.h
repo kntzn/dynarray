@@ -60,6 +60,7 @@ template <typename dataType> class darray
         bool push_back (dataType value);
         bool pop_back ();
         bool push_front (dataType value);
+        bool pop_front ();
 
         // Size getters
         arrln size ();
@@ -129,6 +130,19 @@ bool darray<dataType>::push_front (dataType value)
 
     return true;
     }
+
+template<typename dataType>
+bool darray<dataType>::pop_front ()
+    {
+    for (int i = 0; i < currentLen - 1; i++)
+        container [i] = container [i + 1];
+    container [currentLen - 1] = NAN;
+
+    currentLen--;
+
+    return true;
+    }
+
 
 
 template<typename dataType>

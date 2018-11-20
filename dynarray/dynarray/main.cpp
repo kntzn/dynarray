@@ -5,37 +5,28 @@
 
 #define echo(msg) std::cout<<msg<<std::endl
 
-#define TST_VAL 50000
-
 int main ()
     {
-    darray <int> arr (5);
+    darray <int> arr (200);
     std::list <int> lst;
 
     clock_t start = clock ();
 
-    for (int i = TST_VAL; i < 2* TST_VAL; i++)
+    for (int i = 0; i < 20; i++)
         arr.push_back (i);
-    
-    
-    //for (int i = TST_VAL - 1; i >= 0; i--)
-      //  arr.push_front (i);
 
-    printf ("arr: %d\n", clock () - start);
+    for (int i = 0; i < 5; i++)
+        {
+        arr.pop_front ();
+        arr.pop_back ();
+        }
 
-    start = clock ();
-
-    for (int i = TST_VAL; i < 2 * TST_VAL; i++)
-        lst.push_back (i);
+    for (int i = 0; i < 10; i++)
+        echo (arr [i]);
 
 
-    //for (int i = TST_VAL - 1; i >= 0; i--)
-      //  lst.push_front (i);
+    printf ("tm: %d\n", clock () - start);
 
-    printf ("lst: %d\n", clock () - start);
-
-
-    //std::cout << arr [2] << std::endl;
 
     system ("pause");
     }
