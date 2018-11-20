@@ -32,13 +32,8 @@ template <typename dataType> class darray
         bool shrink ();
         bool resize (arrln newSize);
         
-        /*dataType & operator [] (arrln index)
-            {
-            msgassert (index < currentLen + 1, "Index is out of range\n");
-            msgassert (index >= 0, "Index is out of range\n");
-
-            return container [index];
-            }*/
+        dataType & operator [] (arrln index);
+            
         
         
             
@@ -68,7 +63,7 @@ inline darray<dataType>::darray (arrln Size)
     if (container == nullptr)
         printf ("Failed to allocate memory\n");
     else
-        printf ("Allocated %d bytes at %d\n", allocLen*sizeof (dataType), int (container));
+        printf ("Allocated %d bytes\n", allocLen*sizeof (dataType));
 
     }
 
@@ -105,10 +100,13 @@ inline bool darray<dataType>::resize (arrln newSize)
     if (newSize >= currentLen)
         {
         dataType* newContainer = nullptr;
-        if (newContainer = (dataType*)calloc (newSize, sizeof (dataType)))
+        newContainer = (dataType*)calloc (newSize, sizeof (dataType));
+        if (newContainer != nullptr)
             {
             // Copies the memory
-            memcpy (newContainer, container, currentLen);
+            for (int i = 0; i < currentLen; i++)
+                newContainer [i] = container [i];
+            
             allocLen = newSize;
             
             // Releases memory
@@ -126,6 +124,12 @@ inline bool darray<dataType>::resize (arrln newSize)
     return false;
     }
 
+template<typename dataType>
+inline dataType & darray<dataType>::operator[](arrln index)
+    {
+    return container [index];
+    }
+
 
 template<typename dataType>
 inline bool darray<dataType>::push_back (dataType value)
@@ -134,8 +138,9 @@ inline bool darray<dataType>::push_back (dataType value)
         if (!resize ((allocLen * 3 / 2) + 1))
             return false;
           
-    container [currentLen++] = value;
-            
+    container [currentLen] = value;
+    currentLen++;
+
     return true;
     }
 

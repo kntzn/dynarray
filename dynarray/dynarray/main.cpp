@@ -2,23 +2,23 @@
 #include <vector>
 #include <iostream>
 
+#define echo(msg) std::cout<<msg<<std::endl
+
 int main ()
     {
-    darray <int> arr (10);
+    darray <int> arr (5);
 
-    std::cout << arr.push_back (10) << std::endl;
-    std::cout << arr.push_back (10) << std::endl;
-    std::cout << arr.push_back (10) << std::endl;
-    std::cout << arr.push_back (10) << std::endl;
-    std::cout << arr.push_back (10) << std::endl;
-    std::cout << arr.push_back (10) << std::endl;
-    std::cout << arr.size () << std::endl;
-    std::cout << arr.push_back (10) << std::endl;
-    std::cout << arr.push_back (10) << std::endl;
-    std::cout << arr.push_back (10) << std::endl;
-    arr.shrink ();
-    std::cout << arr.size () << std::endl;
+    for (int i = 0; i < 10; i++)
+        {
+        bool res = arr.push_back (i);
+        }
+    
+    echo ("\n\n");
+    for (int i = 0; i < 10; i++)
+        {
 
+        std::cout << arr [i] << std::endl;
+        }
     //std::cout << arr [2] << std::endl;
 
     system ("pause");
