@@ -13,17 +13,12 @@ typedef size_t arrln;
                                        (void)((!!(expression)) || \
                                        (_wassert(_CRT_WIDE(#expression), _CRT_WIDE(__FILE__), (unsigned)(__LINE__)), 0)); }
 
-
-
 template <typename dataType> class darray
     {
     private:
-        bool ok;
-        bool debug_output;
         float stretch_k;
         arrln currentLen, allocLen;
         dataType* container;
-
         unsigned long long int nPushes, nOperations;
 
         // Allocates memory and fils it with poison value
@@ -49,6 +44,7 @@ template <typename dataType> class darray
         bool pop_back ();
         bool push_front (dataType value);
         bool pop_front ();
+        bool insert (dataType value, arrln index);
 
         // Size getters
         arrln size ();
@@ -111,7 +107,6 @@ template<typename dataType>
 inline darray<dataType>::darray (arrln Size)
     {
     // Default values
-    debug_output = false;
     currentLen = 0;
     allocLen = Size;
     nPushes = nOperations = 0;
@@ -215,6 +210,27 @@ bool darray<dataType>::pop_front ()
     container [currentLen - 1] = NAN;
 
     currentLen--;
+
+    return true;
+    }
+
+template<typename dataType>
+inline bool darray<dataType>::insert (dataType value, arrln index)
+    {
+    // TODO: add negative index
+
+    nPushes++;
+    updateStretchK ();
+
+    if (currentLen == allocLen - 1)
+        if (!resize ((allocLen * stretch_k) + 1))
+            return false;
+
+    for (int i = currentLen + 1; i > index; i--)
+        container [i] = container [i - 1];
+
+    container [index] = value;
+    currentLen++;
 
     return true;
     }

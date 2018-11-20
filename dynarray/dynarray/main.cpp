@@ -12,15 +12,12 @@ int main ()
     std::list <int> lst;
 
     clock_t start = clock ();
+    for (int i = 0; i < 10; i++)
+        arr.push_back (i);
+    arr.insert (557, 5);
+    for (int i = 0; i < 10; i++)
+        printf ("[%d] = %d\n", i, arr [i]);
 
-    for (int i = 0; i < 20; i++)
-        {
-        times (rand () % 10)
-            arr.push_back (i);
-        times (rand () % 2)
-            if (arr.size ())
-                arr.pop_back ();
-        }
 
     printf ("tm: %d\n", clock () - start);
 
