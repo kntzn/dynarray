@@ -4,6 +4,7 @@
 #include <time.h>
 
 #define echo(msg) std::cout<<msg<<std::endl
+#define times(n) for (int _ = 0; _ < n; _++)
 
 int main ()
     {
@@ -12,16 +13,14 @@ int main ()
 
     clock_t start = clock ();
 
-    for (int i = 0; i < 2000; i++)
+    for (int i = 0; i < 20; i++)
         {
-        arr.push_back (i);
-        arr.pop_back ();
-        arr.push_back (i);
+        times (rand () % 10)
+            arr.push_back (i);
+        times (rand () % 2)
+            if (arr.size ())
+                arr.pop_back ();
         }
-
-    for (int i = 0; i < 1000; i++)
-        echo (arr [i]);
-
 
     printf ("tm: %d\n", clock () - start);
 
