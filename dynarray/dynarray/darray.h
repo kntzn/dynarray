@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <math.h>
 
-typedef unsigned long long int arrln;
+typedef size_t arrln;
 #define SZ_DEFAULT 1000
 #define msgassert(expression, message) { if (!expression) printf ("%s\n", message); \
                                        (void)((!!(expression)) || \
@@ -18,37 +18,66 @@ template <typename dataType> class darray
         arrln currentLen, allocLen;
         dataType* container;
 
-        
+        // Allocates memory and fils it with poison value
+        bool allocate (dataType* & newContainer, arrln len)
+            {
+            newContainer = nullptr;
+
+            msgassert (allocLen, "Size of array must be greater than zero\n");
+            newContainer = (dataType*)calloc (len, sizeof (dataType));
+
+            if (newContainer == nullptr)
+                {
+                printf ("Failed to allocate memory\n");
+                return false;
+                }
+            else
+                {
+                printf ("Allocated %d bytes\n", len * sizeof (dataType));
+
+                for (int i = 0; i < len; i++)
+                    newContainer [i] = NAN;
+
+                return true;
+                }
+            }
 
     public:
-        // Constructor and destructor
+        // Constructors and destructor
         darray (arrln Size = STK_SZ_DEFAULT);
         ~darray ();
 
-        // Getters
+        // Container getters
         dataType & back ();
         dataType & front ();
 
-        bool shrink ();
-        bool resize (arrln newSize);
-        
+        // Operators
         dataType & operator [] (arrln index);
-            
         
-        
-            
-        
-
         // Modifiers
         bool push_back (dataType value);
-        //bool pop ();
+        bool pop_back ();
         //bool shrink_to_fit ();
 
         // Size getters
         arrln size ();
         bool empty ();
+
+        // Size setters
+        bool shrink ();
+        bool resize (arrln newSize);
+
     };
 
+
+
+
+
+
+
+
+
+// Constructors and destructors
 template<typename dataType>
 inline darray<dataType>::darray (arrln Size)
     {
@@ -57,14 +86,8 @@ inline darray<dataType>::darray (arrln Size)
     currentLen = 0;
     allocLen = Size;
     
-    msgassert (allocLen, "Size of array must be greater than zero\n");
-    container = (dataType*) calloc (allocLen, sizeof (dataType));
-
-    if (container == nullptr)
-        printf ("Failed to allocate memory\n");
-    else
-        printf ("Allocated %d bytes\n", allocLen*sizeof (dataType));
-
+    // Allocates memory
+    allocate (container, allocLen);
     }
 
 template<typename dataType>
@@ -73,6 +96,7 @@ inline darray<dataType>::~darray ()
     free (container);
     }
 
+// Container getters
 template<typename dataType>
 inline dataType & darray<dataType>::back ()
     {
@@ -87,6 +111,60 @@ inline dataType & darray<dataType>::front ()
     return container [0];
     }
 
+
+// Operators
+template<typename dataType>
+inline dataType & darray<dataType>::operator[](arrln index)
+    {
+    return container [index];
+    }
+
+
+// Modifiers
+template<typename dataType>
+inline bool darray<dataType>::push_back (dataType value)
+    {
+    if (currentLen == allocLen - 1)
+        if (!resize ((allocLen * 3 / 2) + 1))
+            return false;
+          
+    container [currentLen] = value;
+    currentLen++;
+
+    return true;
+    }
+
+template<typename dataType>
+inline bool darray<dataType>::pop_back ()
+    {
+    if (!currentLen)
+        {
+        printf ("Unable to pop ():\n\tArray is empty\n");
+        return false;
+        }
+
+    container [currentLen - 1] = NAN;
+    currentLen--;
+
+    return true;
+    }
+
+
+// Size getters
+template<typename dataType>
+inline arrln darray<dataType>::size ()
+    {
+    return currentLen;
+    }
+
+template<typename dataType>
+inline bool darray<dataType>::empty ()
+    {
+    return (currentLen == 0);
+    }
+
+
+// Size setters
 template<typename dataType>
 inline bool darray<dataType>::shrink ()
     {
@@ -96,19 +174,18 @@ inline bool darray<dataType>::shrink ()
 template<typename dataType>
 inline bool darray<dataType>::resize (arrln newSize)
     {
-    msgassert (newSize, "Size of array must be greater than zero\n");
     if (newSize >= currentLen)
         {
         dataType* newContainer = nullptr;
-        newContainer = (dataType*)calloc (newSize, sizeof (dataType));
-        if (newContainer != nullptr)
+
+        if (allocate (newContainer, newSize))
             {
             // Copies the memory
             for (int i = 0; i < currentLen; i++)
                 newContainer [i] = container [i];
-            
+
             allocLen = newSize;
-            
+
             // Releases memory
             free (container);
             container = newContainer;
@@ -124,36 +201,5 @@ inline bool darray<dataType>::resize (arrln newSize)
     return false;
     }
 
-template<typename dataType>
-inline dataType & darray<dataType>::operator[](arrln index)
-    {
-    return container [index];
-    }
-
-
-template<typename dataType>
-inline bool darray<dataType>::push_back (dataType value)
-    {
-    if (currentLen == allocLen - 1)
-        if (!resize ((allocLen * 3 / 2) + 1))
-            return false;
-          
-    container [currentLen] = value;
-    currentLen++;
-
-    return true;
-    }
-
-template<typename dataType>
-inline arrln darray<dataType>::size ()
-    {
-    return currentLen;
-    }
-
-template<typename dataType>
-inline bool darray<dataType>::empty ()
-    {
-    return (currentLen == 0);
-    }
 
 #undef SZ_DEFAULT
