@@ -10,6 +10,8 @@ typedef size_t arrln;
                                        (void)((!!(expression)) || \
                                        (_wassert(_CRT_WIDE(#expression), _CRT_WIDE(__FILE__), (unsigned)(__LINE__)), 0)); }
 
+
+
 template <typename dataType> class darray
     {
     private:
@@ -71,12 +73,6 @@ template <typename dataType> class darray
 
 
 
-
-
-
-
-
-
 // Constructors and destructors
 template<typename dataType>
 inline darray<dataType>::darray (arrln Size)
@@ -96,22 +92,6 @@ inline darray<dataType>::~darray ()
     free (container);
     }
 
-// Container getters
-template<typename dataType>
-inline dataType & darray<dataType>::back ()
-    {
-    msgassert (currentLen, "Unable to back ():\n\tArray is empty\n");
-    return container [currentLen - 1];
-    }
-
-template<typename dataType>
-inline dataType & darray<dataType>::front ()
-    {
-    msgassert (currentLen, "Unable to back ():\n\tArray is empty\n");
-    return container [0];
-    }
-
-
 // Operators
 template<typename dataType>
 inline dataType & darray<dataType>::operator[](arrln index)
@@ -127,7 +107,7 @@ inline bool darray<dataType>::push_back (dataType value)
     if (currentLen == allocLen - 1)
         if (!resize ((allocLen * 3 / 2) + 1))
             return false;
-          
+
     container [currentLen] = value;
     currentLen++;
 
@@ -135,44 +115,7 @@ inline bool darray<dataType>::push_back (dataType value)
     }
 
 template<typename dataType>
-inline bool darray<dataType>::pop_back ()
-    {
-    if (!currentLen)
-        {
-        printf ("Unable to pop ():\n\tArray is empty\n");
-        return false;
-        }
-
-    container [currentLen - 1] = NAN;
-    currentLen--;
-
-    return true;
-    }
-
-
-// Size getters
-template<typename dataType>
-inline arrln darray<dataType>::size ()
-    {
-    return currentLen;
-    }
-
-template<typename dataType>
-inline bool darray<dataType>::empty ()
-    {
-    return (currentLen == 0);
-    }
-
-
-// Size setters
-template<typename dataType>
-inline bool darray<dataType>::shrink ()
-    {
-    return resize (currentLen);
-    }
-
-template<typename dataType>
-inline bool darray<dataType>::resize (arrln newSize)
+bool darray<dataType>::resize (arrln newSize)
     {
     if (newSize >= currentLen)
         {
@@ -200,6 +143,5 @@ inline bool darray<dataType>::resize (arrln newSize)
 
     return false;
     }
-
 
 #undef SZ_DEFAULT
