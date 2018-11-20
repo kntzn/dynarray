@@ -24,7 +24,8 @@ template <typename dataType> class darray
         ~darray ();
 
         // Getters
-        //dataType & top ();
+        dataType & back ();
+        dataType & front ();
 
         // Modifiers
         //bool push (dataType value);
@@ -51,16 +52,31 @@ inline darray<dataType>::darray (arrln Size)
     if (container == nullptr)
         {
         ok = false;
-        printf ("%s\n", "Failed to allocate memory\n");
+        printf ("Failed to allocate memory\n");
         }
     else
-        printf ("%d\n", int (container));
+        printf ("Allocated %d bytes at %d\n", allocLen*sizeof (dataType), int (container));
+
     }
 
 template<typename dataType>
 inline darray<dataType>::~darray ()
     {
     free (container);
+    }
+
+template<typename dataType>
+inline dataType & darray<dataType>::back ()
+    {
+    msgassert (currentLen, "Unable to back ():\n\tArray is empty\n");
+    return container [currentLen - 1];
+    }
+
+template<typename dataType>
+inline dataType & darray<dataType>::front ()
+    {
+    msgassert (currentLen, "Unable to back ():\n\tArray is empty\n");
+    return container [0];
     }
 
 template<typename dataType>
