@@ -59,7 +59,7 @@ template <typename dataType> class darray
         // Modifiers
         bool push_back (dataType value);
         bool pop_back ();
-        //bool shrink_to_fit ();
+        bool push_front (dataType value);
 
         // Size getters
         arrln size ();
@@ -115,6 +115,23 @@ inline bool darray<dataType>::push_back (dataType value)
     }
 
 template<typename dataType>
+bool darray<dataType>::push_front (dataType value)
+    {
+    if (currentLen == allocLen - 1)
+        if (!resize ((allocLen * 3 / 2) + 1))
+            return false;
+
+    for (int i = currentLen+1; i > 0; i--)
+        container [i] = container [i - 1];
+
+    container [0] = value;
+    currentLen++;
+
+    return true;
+    }
+
+
+template<typename dataType>
 bool darray<dataType>::resize (arrln newSize)
     {
     if (newSize >= currentLen)
@@ -142,6 +159,61 @@ bool darray<dataType>::resize (arrln newSize)
         printf ("Failed to 'resize ()'\n\tNew length is less than old one\n");
 
     return false;
+    }
+
+
+// Container getters
+template<typename dataType>
+dataType & darray <dataType>::back ()
+    {
+    msgassert (currentLen, "Unable to back ():\n\tArray is empty\n");
+    return container [currentLen - 1];
+    }
+
+template<typename dataType>
+dataType & darray <dataType>::front ()
+    {
+    msgassert (currentLen, "Unable to back ():\n\tArray is empty\n");
+    return container [0];
+    }
+
+
+// Modifiers
+template<typename dataType>
+bool darray<dataType>::pop_back ()
+    {
+    if (!currentLen)
+        {
+        printf ("Unable to pop ():\n\tArray is empty\n");
+        return false;
+        }
+
+    container [currentLen - 1] = NAN;
+    currentLen--;
+
+    return true;
+    }
+
+
+// Size getters
+template<typename dataType>
+arrln darray<dataType>::size ()
+    {
+    return currentLen;
+    }
+
+template<typename dataType>
+bool darray<dataType>::empty ()
+    {
+    return (currentLen == 0);
+    }
+
+
+// Size setters
+template<typename dataType>
+bool darray<dataType>::shrink ()
+    {
+    return resize (currentLen);
     }
 
 #undef SZ_DEFAULT
