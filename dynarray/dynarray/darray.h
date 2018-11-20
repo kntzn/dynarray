@@ -29,6 +29,7 @@ template <typename dataType> class darray
         dataType & back ();
         dataType & front ();
 
+        bool shrink ();
         bool resize (arrln newSize);
         
         /*dataType & operator [] (arrln index)
@@ -44,7 +45,7 @@ template <typename dataType> class darray
         
 
         // Modifiers
-        //bool push_back (dataType value);
+        bool push_back (dataType value);
         //bool pop ();
         //bool shrink_to_fit ();
 
@@ -92,17 +93,23 @@ inline dataType & darray<dataType>::front ()
     }
 
 template<typename dataType>
+inline bool darray<dataType>::shrink ()
+    {
+    return resize (currentLen);
+    }
+
+template<typename dataType>
 inline bool darray<dataType>::resize (arrln newSize)
     {
     msgassert (newSize, "Size of array must be greater than zero\n");
-    if (newSize > currentLen)
+    if (newSize >= currentLen)
         {
         dataType* newContainer = nullptr;
         if (newContainer = (dataType*)calloc (newSize, sizeof (dataType)))
             {
             // Copies the memory
             memcpy (newContainer, container, currentLen);
-            allocLen = currentLen = newSize;
+            allocLen = newSize;
             
             // Releases memory
             free (container);
@@ -113,15 +120,24 @@ inline bool darray<dataType>::resize (arrln newSize)
         else
             return false;
         }
-    else if (newSize == currentLen)
-        printf ("New length is equal to old one\n"
-                "Use 'shrink ()' instead\n");
     else
-        printf ("New length is less than old one\n");
+        printf ("Failed to 'resize ()'\n\tNew length is less than old one\n");
 
     return false;
     }
 
+
+template<typename dataType>
+inline bool darray<dataType>::push_back (dataType value)
+    {
+    if (currentLen == allocLen - 1)
+        if (!resize ((allocLen * 3 / 2) + 1))
+            return false;
+          
+    container [currentLen++] = value;
+            
+    return true;
+    }
 
 template<typename dataType>
 inline arrln darray<dataType>::size ()
