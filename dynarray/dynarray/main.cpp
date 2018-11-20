@@ -6,8 +6,9 @@ int main ()
     {
     darray <int> arr (10);
     
-    //std::vector <int> vec;
-    std::cout << arr.back () << std::endl;
+    
+
+    //std::cout << arr [2] << std::endl;
 
     system ("pause");
     }

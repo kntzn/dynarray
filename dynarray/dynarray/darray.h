@@ -18,6 +18,8 @@ template <typename dataType> class darray
         arrln currentLen, allocLen;
         dataType* container;
 
+        
+
     public:
         // Constructor and destructor
         darray (arrln Size = STK_SZ_DEFAULT);
@@ -27,8 +29,22 @@ template <typename dataType> class darray
         dataType & back ();
         dataType & front ();
 
+        bool resize (arrln newSize);
+        
+        /*dataType & operator [] (arrln index)
+            {
+            msgassert (index < currentLen + 1, "Index is out of range\n");
+            msgassert (index >= 0, "Index is out of range\n");
+
+            return container [index];
+            }*/
+        
+        
+            
+        
+
         // Modifiers
-        //bool push (dataType value);
+        //bool push_back (dataType value);
         //bool pop ();
         //bool shrink_to_fit ();
 
@@ -41,7 +57,6 @@ template<typename dataType>
 inline darray<dataType>::darray (arrln Size)
     {
     // Default values
-    ok = true;
     debug_output = false;
     currentLen = 0;
     allocLen = Size;
@@ -50,10 +65,7 @@ inline darray<dataType>::darray (arrln Size)
     container = (dataType*) calloc (allocLen, sizeof (dataType));
 
     if (container == nullptr)
-        {
-        ok = false;
         printf ("Failed to allocate memory\n");
-        }
     else
         printf ("Allocated %d bytes at %d\n", allocLen*sizeof (dataType), int (container));
 
@@ -78,6 +90,38 @@ inline dataType & darray<dataType>::front ()
     msgassert (currentLen, "Unable to back ():\n\tArray is empty\n");
     return container [0];
     }
+
+template<typename dataType>
+inline bool darray<dataType>::resize (arrln newSize)
+    {
+    msgassert (newSize, "Size of array must be greater than zero\n");
+    if (newSize > currentLen)
+        {
+        dataType* newContainer = nullptr;
+        if (newContainer = (dataType*)calloc (newSize, sizeof (dataType)))
+            {
+            // Copies the memory
+            memcpy (newContainer, container, currentLen);
+            allocLen = currentLen = newSize;
+            
+            // Releases memory
+            free (container);
+            container = newContainer;
+
+            return true;
+            }
+        else
+            return false;
+        }
+    else if (newSize == currentLen)
+        printf ("New length is equal to old one\n"
+                "Use 'shrink ()' instead\n");
+    else
+        printf ("New length is less than old one\n");
+
+    return false;
+    }
+
 
 template<typename dataType>
 inline arrln darray<dataType>::size ()
