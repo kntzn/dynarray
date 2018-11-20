@@ -2,25 +2,41 @@
 #include <list>
 #include <iostream>
 #include <time.h>
+#include <vector>
 
-#define echo(msg) std::cout<<msg<<std::endl
+#define echo(msg) std::cout<<msg
 #define times(n) for (int _ = 0; _ < n; _++)
+
+#define N_TESTS 1000000
+#define variable auto
 
 int main ()
     {
-    darray <int> arr (200);
-    std::list <int> lst;
-
-    clock_t start = clock ();
-    for (int i = 0; i < 10; i++)
-        arr.push_back (i);
+    variable n_tst = 10;
     
-    for (int i = - (signed) arr.size (); i < (signed) arr.size(); i++)
-        printf ("[%d] = %d\n", i, arr [i]);
+    darray <int> arr (20);
+    std::vector <int> vec;
+    
+    
+    echo ("TST 0: only push_back");
+    
+    
+    while (n_tst < N_TESTS)
+        {
+        darray <int> arr (20);
+        std::vector <int> vec;
+
+        clock_t start = clock ();
+
+        times (n_tst)
+            vec.push_back (1337);
 
 
-    //printf ("tm: %d\n", clock () - start);
+        n_tst += 10000;
 
+        echo (clock () - start << ", ");
+        }
+    
 
     system ("pause");
     }

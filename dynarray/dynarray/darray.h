@@ -9,7 +9,7 @@ typedef signed int sarrln;
 #define SZ_DEFAULT 1000
 #define STC_SZ_MAX 5.f
 #define STC_SZ_MIN 1.5f
-#define STC_N_STAT 25.f
+#define STC_N_STAT 25
 #define msgassert(expression, message) { if (!expression) printf ("%s\n", message); \
                                        (void)((!!(expression)) || \
                                        (_wassert(_CRT_WIDE(#expression), _CRT_WIDE(__FILE__), (unsigned)(__LINE__)), 0)); }
@@ -47,9 +47,12 @@ template <typename dataType> class darray
         bool pop_front ();
         bool insert (dataType value, sarrln index);
 
+        
+
         // Size getters
         arrln size ();
         bool empty ();
+        arrln capacity ();
 
         // Size setters
         bool shrink ();
@@ -74,7 +77,7 @@ inline bool darray<dataType>::allocate (dataType *& newContainer, arrln len)
         }
     else
         {
-        printf ("Allocated %d bytes\n", len * sizeof (dataType));
+        //printf ("Allocated %d bytes\n", len * sizeof (dataType));
 
         for (int i = 0; i < len; i++)
             newContainer [i] = NAN;
@@ -90,17 +93,19 @@ inline void darray<dataType>::updateStretchK ()
     
     if (nOperations > STC_N_STAT)
         {
-        nOperations--;
-        nPushes--;
-        }
-    if (nPushes < 0)
-        nPushes = 0;
+        //printf ("stat\n");
 
+        if (nOperations > 0)
+            nOperations--;
+        if (nPushes > 0)
+            nPushes--;
+        }
+
+    //printf ("%f\n", (float (nPushes) / float (nOperations)));
 
     stretch_k = STC_SZ_MIN + 
                 float ((STC_SZ_MAX - STC_SZ_MIN) * (float (nPushes) / float (nOperations)));
-
-    printf ("%f\n", stretch_k);
+    //printf ("str_k %f\n", stretch_k);
     }
 
 // Constructors and destructors
@@ -258,6 +263,12 @@ template<typename dataType>
 bool darray<dataType>::empty ()
     {
     return (currentLen == 0);
+    }
+
+template<typename dataType>
+inline arrln darray<dataType>::capacity ()
+    {
+    return allocLen;
     }
 
 
