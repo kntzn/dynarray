@@ -12,16 +12,14 @@ int main ()
 
     clock_t start = clock ();
 
-    for (int i = 0; i < 20; i++)
-        arr.push_back (i);
-
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < 2000; i++)
         {
-        arr.pop_front ();
+        arr.push_back (i);
         arr.pop_back ();
+        arr.push_back (i);
         }
 
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 1000; i++)
         echo (arr [i]);
 
 

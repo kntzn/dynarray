@@ -6,6 +6,7 @@
 
 typedef size_t arrln;
 #define SZ_DEFAULT 1000
+#define STC_SZ_MAX 5.f
 #define msgassert(expression, message) { if (!expression) printf ("%s\n", message); \
                                        (void)((!!(expression)) || \
                                        (_wassert(_CRT_WIDE(#expression), _CRT_WIDE(__FILE__), (unsigned)(__LINE__)), 0)); }
@@ -17,32 +18,17 @@ template <typename dataType> class darray
     private:
         bool ok;
         bool debug_output;
+        float stretch_k;
         arrln currentLen, allocLen;
         dataType* container;
 
+        unsigned long long int nPushes, nOperations;
+
         // Allocates memory and fils it with poison value
-        bool allocate (dataType* & newContainer, arrln len)
-            {
-            newContainer = nullptr;
-
-            msgassert (allocLen, "Size of array must be greater than zero\n");
-            newContainer = (dataType*)calloc (len, sizeof (dataType));
-
-            if (newContainer == nullptr)
-                {
-                printf ("Failed to allocate memory\n");
-                return false;
-                }
-            else
-                {
-                printf ("Allocated %d bytes\n", len * sizeof (dataType));
-
-                for (int i = 0; i < len; i++)
-                    newContainer [i] = NAN;
-
-                return true;
-                }
-            }
+        bool allocate (dataType* & newContainer, arrln len);
+            
+        void updateStretchK ();
+            
 
     public:
         // Constructors and destructor
@@ -73,6 +59,38 @@ template <typename dataType> class darray
     };
 
 
+// Util
+template<typename dataType>
+inline bool darray<dataType>::allocate (dataType *& newContainer, arrln len)
+    {
+    newContainer = nullptr;
+
+    msgassert (allocLen, "Size of array must be greater than zero\n");
+    newContainer = (dataType*)calloc (len, sizeof (dataType));
+
+    if (newContainer == nullptr)
+        {
+        printf ("Failed to allocate memory\n");
+        return false;
+        }
+    else
+        {
+        printf ("Allocated %d bytes\n", len * sizeof (dataType));
+
+        for (int i = 0; i < len; i++)
+            newContainer [i] = NAN;
+
+        return true;
+        }
+    }
+
+template<typename dataType>
+inline void darray<dataType>::updateStretchK ()
+    {
+    nOperations++;
+
+    stretch_k = STC_SZ_MAX * (float (nPushes) / float (nOperations));
+    }
 
 // Constructors and destructors
 template<typename dataType>
@@ -82,7 +100,9 @@ inline darray<dataType>::darray (arrln Size)
     debug_output = false;
     currentLen = 0;
     allocLen = Size;
-    
+    nPushes = nOperations = 0;
+    stretch_k = STC_SZ_MAX;
+
     // Allocates memory
     allocate (container, allocLen);
     }
@@ -92,6 +112,23 @@ inline darray<dataType>::~darray ()
     {
     free (container);
     }
+
+
+// Container getters
+template<typename dataType>
+dataType & darray <dataType>::back ()
+    {
+    msgassert (currentLen, "Unable to back ():\n\tArray is empty\n");
+    return container [currentLen - 1];
+    }
+
+template<typename dataType>
+dataType & darray <dataType>::front ()
+    {
+    msgassert (currentLen, "Unable to back ():\n\tArray is empty\n");
+    return container [0];
+    }
+
 
 // Operators
 template<typename dataType>
@@ -105,8 +142,11 @@ inline dataType & darray<dataType>::operator[](arrln index)
 template<typename dataType>
 inline bool darray<dataType>::push_back (dataType value)
     {
+    nPushes++;
+    updateStretchK ();
+
     if (currentLen == allocLen - 1)
-        if (!resize ((allocLen * 3 / 2) + 1))
+        if (!resize ((allocLen * stretch_k) + 1))
             return false;
 
     container [currentLen] = value;
@@ -116,10 +156,30 @@ inline bool darray<dataType>::push_back (dataType value)
     }
 
 template<typename dataType>
+bool darray<dataType>::pop_back ()
+    {
+    updateStretchK ();
+
+    if (!currentLen)
+        {
+        printf ("Unable to pop ():\n\tArray is empty\n");
+        return false;
+        }
+
+    container [currentLen - 1] = NAN;
+    currentLen--;
+
+    return true;
+    }
+
+template<typename dataType>
 bool darray<dataType>::push_front (dataType value)
     {
+    nPushes++;
+    updateStretchK ();
+
     if (currentLen == allocLen - 1)
-        if (!resize ((allocLen * 3 / 2) + 1))
+        if (!resize ((allocLen * stretch_k) + 1))
             return false;
 
     for (int i = currentLen+1; i > 0; i--)
@@ -134,6 +194,8 @@ bool darray<dataType>::push_front (dataType value)
 template<typename dataType>
 bool darray<dataType>::pop_front ()
     {
+    updateStretchK ();
+
     for (int i = 0; i < currentLen - 1; i++)
         container [i] = container [i + 1];
     container [currentLen - 1] = NAN;
@@ -144,6 +206,26 @@ bool darray<dataType>::pop_front ()
     }
 
 
+// Size getters
+template<typename dataType>
+arrln darray<dataType>::size ()
+    {
+    return currentLen;
+    }
+
+template<typename dataType>
+bool darray<dataType>::empty ()
+    {
+    return (currentLen == 0);
+    }
+
+
+// Size setters
+template<typename dataType>
+bool darray<dataType>::shrink ()
+    {
+    return resize (currentLen);
+    }
 
 template<typename dataType>
 bool darray<dataType>::resize (arrln newSize)
@@ -176,58 +258,6 @@ bool darray<dataType>::resize (arrln newSize)
     }
 
 
-// Container getters
-template<typename dataType>
-dataType & darray <dataType>::back ()
-    {
-    msgassert (currentLen, "Unable to back ():\n\tArray is empty\n");
-    return container [currentLen - 1];
-    }
-
-template<typename dataType>
-dataType & darray <dataType>::front ()
-    {
-    msgassert (currentLen, "Unable to back ():\n\tArray is empty\n");
-    return container [0];
-    }
-
-
-// Modifiers
-template<typename dataType>
-bool darray<dataType>::pop_back ()
-    {
-    if (!currentLen)
-        {
-        printf ("Unable to pop ():\n\tArray is empty\n");
-        return false;
-        }
-
-    container [currentLen - 1] = NAN;
-    currentLen--;
-
-    return true;
-    }
-
-
-// Size getters
-template<typename dataType>
-arrln darray<dataType>::size ()
-    {
-    return currentLen;
-    }
-
-template<typename dataType>
-bool darray<dataType>::empty ()
-    {
-    return (currentLen == 0);
-    }
-
-
-// Size setters
-template<typename dataType>
-bool darray<dataType>::shrink ()
-    {
-    return resize (currentLen);
-    }
 
 #undef SZ_DEFAULT
+#undef STC_SZ_MAX
