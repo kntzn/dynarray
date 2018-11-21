@@ -4,7 +4,11 @@
 #include <time.h>
 #include <vector>
 
-#define echo(msg) std::cout<<msg
+#define echo(msg) std::cout<<msg<<"\n"
+
+#define and_str <<
+
+#define iterate(begin, end) for (int iterator = begin; iterator < end; iterator++)
 #define times(n) for (int _ = 0; _ < n; _++)
 
 #define N_TESTS 1000000
@@ -12,31 +16,24 @@
 
 int main ()
     {
-    variable n_tst = 10;
     
     darray <int> arr (20);
     std::vector <int> vec;
     
+    variable n_tst = 10;
+
+    iterate (0, n_tst)
+        arr.push_back (iterator);
     
-    echo ("TST 0: only push_back");
-    
-    
-    while (n_tst < N_TESTS)
-        {
-        darray <int> arr (20);
-        std::vector <int> vec;
+    iterate (0, arr.size ())
+        echo (iterator and_str " = " and_str arr [iterator]);
 
-        clock_t start = clock ();
-
-        times (n_tst)
-            vec.push_back (1337);
+    arr.erase (0);
+    echo ("erased");
 
 
-        n_tst += 10000;
-
-        echo (clock () - start << ", ");
-        }
-    
+    iterate (0, arr.size ())
+        echo (iterator and_str " = " and_str arr [iterator]);
 
     system ("pause");
     }

@@ -46,9 +46,8 @@ template <typename dataType> class darray
         bool push_front (dataType value);
         bool pop_front ();
         bool insert (dataType value, sarrln index);
-
+        bool erase (sarrln index);
         
-
         // Size getters
         arrln size ();
         bool empty ();
@@ -221,7 +220,6 @@ bool darray<dataType>::pop_front ()
 template<typename dataType>
 inline bool darray<dataType>::insert (dataType value, sarrln index)
     {
-    // TODO: add negative index
     if (index < 0)
         index = currentLen + index;
     if (index < 0 || index > currentLen)
@@ -242,6 +240,28 @@ inline bool darray<dataType>::insert (dataType value, sarrln index)
 
     container [index] = value;
     currentLen++;
+
+    return true;
+    }
+
+template<typename dataType>
+inline bool darray<dataType>::erase (sarrln index)
+    {
+    if (index < 0)
+        index = currentLen + index;
+    if (index < 0 || index > currentLen)
+        {
+        printf ("Index is out of range\n");
+        return false;
+        }
+
+    updateStretchK ();
+
+    for (int i = index; i < currentLen; i++)
+        container [i] = container [i + 1];
+
+    container [currentLen-1] = NAN;
+    currentLen--;
 
     return true;
     }
