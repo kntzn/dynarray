@@ -93,19 +93,14 @@ inline void darray<dataType>::updateStretchK ()
     
     if (nOperations > STC_N_STAT)
         {
-        //printf ("stat\n");
-
         if (nOperations > 0)
             nOperations--;
         if (nPushes > 0)
             nPushes--;
         }
 
-    //printf ("%f\n", (float (nPushes) / float (nOperations)));
-
     stretch_k = STC_SZ_MIN + 
                 float ((STC_SZ_MAX - STC_SZ_MIN) * (float (nPushes) / float (nOperations)));
-    //printf ("str_k %f\n", stretch_k);
     }
 
 // Constructors and destructors
