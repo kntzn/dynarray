@@ -17,6 +17,7 @@ typedef signed int sarrln;
 template <typename dataType> class darray
     {
     private:
+        bool dataTypeIsNum = true;
         float stretch_k;
         arrln currentLen, allocLen;
         dataType* container;
@@ -26,8 +27,7 @@ template <typename dataType> class darray
         bool allocate (dataType* & newContainer, arrln len);
             
         void updateStretchK ();
-            
-
+        
     public:
         // Constructors and destructor
         darray (arrln Size = STK_SZ_DEFAULT);
@@ -56,6 +56,7 @@ template <typename dataType> class darray
         // Size setters
         bool shrink ();
         bool resize (arrln newSize);
+        void clear ();
 
     };
 
@@ -286,6 +287,11 @@ inline arrln darray<dataType>::capacity ()
     return allocLen;
     }
 
+template<typename dataType>
+inline void darray<dataType>::clear ()
+    {
+    currentLen = 0;
+    }
 
 // Size setters
 template<typename dataType>

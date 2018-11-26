@@ -4,6 +4,8 @@
 #include <time.h>
 #include <vector>
 
+// compile with -Werror
+
 #define echo(msg) std::cout<<msg<<"\n"
 
 #define and_str <<
